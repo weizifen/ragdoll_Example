@@ -53,7 +53,7 @@ export class RagdollComponent extends Component {
         this.lowerArmLength = this.lowerLeftArm.scale.x * scale;
         this.upperArmSize = 0.2 * scale;
         this.lowerArmSize = 0.2 * scale;
-        this.neckLength = 0.1 * scale;
+        this.neckLength = 0.03 * scale;
         this.headRadius = (this.head.scale.x / 2) * scale;
         this.upperBodyLength = this.upperBody.scale.y * scale;
         this.pelvisLength = this.pelvis.scale.y * scale;

@@ -1,0 +1,46 @@
+{
+  "__type__": "cc.Material",
+  "_name": "blinn269",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "1baf0fc9-befa-459c-8bdd-af1a450a0319"
+  },
+  "_techIdx": 0,
+  "_defines": [
+    {
+      "USE_ALBEDO_MAP": true,
+      "USE_NORMAL_MAP": true
+    }
+  ],
+  "_states": [
+    {
+      "rasterizerState": {},
+      "blendState": {
+        "targets": [
+          {}
+        ]
+      },
+      "depthStencilState": {}
+    }
+  ],
+  "_props": [
+    {
+      "mainTexture": {
+        "__uuid__": "ac62c071-f6c2-4ed9-9410-e0ac9fae7dcd@57f48"
+      },
+      "albedoScale": {
+        "__type__": "cc.Vec3",
+        "x": 0.800000011920929,
+        "y": 0.800000011920929,
+        "z": 0.800000011920929
+      },
+      "metallic": 0.400000005960464,
+      "roughness": 0.673238098621368,
+      "normalMap": {
+        "__uuid__": "ac62c071-f6c2-4ed9-9410-e0ac9fae7dcd@0ab4a"
+      },
+      "alphaThreshold": 0
+    }
+  ]
+}

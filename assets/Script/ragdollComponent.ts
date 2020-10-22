@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, RigidBody, PhysicsSystem } from 'cc';
+import { _decorator, Component, Node, RigidBody, PhysicsSystem, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('RagdollComponent')
@@ -39,9 +39,21 @@ export class RagdollComponent extends Component {
     private upperLegSize;
     private lowerLegSize;
     private lowerLegLength;
+
+
+    @property({type: Node})
+    private tmpBox: Node = null;
     protected start () {
         // Your initialization goes here.
         this.createRagdoll();
+
+        // this.scheduleOnce(() => {
+        //     console.log("test");
+            
+        //     this.upperBody.getComponent(RigidBody).applyForce(new Vec3(0, 0, 1000));
+
+        //     this.tmpBox.getComponent(RigidBody).applyForce(new Vec3(0, 0, 1000));
+        // }, 2);
     }
     // update (deltaTime: number) {
     //     // Your update function goes here.
@@ -74,13 +86,13 @@ export class RagdollComponent extends Component {
      */
     private joinConnect () {
         const angleA = 0;
-        const angleB  = 0;
-        const twistAngle = 0;
+        const angleB  = 5;
+        const twistAngle = 5;
         const cannonWorld = PhysicsSystem.instance.physicsWorld.impl;
         // 颈关节
         const head: any = (this.head.getComponent(RigidBody) as any)._body.impl;
         const upperBody: any = (this.upperBody.getComponent(RigidBody) as any)._body.impl;
-        // 锥扭转约束
+        // 锥扭转约束: 锥形扭曲约束限制两个物体之间的运动和旋转，类似于肩膀或脚踝等人的关节。在这个约束中，两个对象是必需的。
         const neckJoint = new CANNON.ConeTwistConstraint(head, upperBody, {
             pivotA: new CANNON.Vec3(0, -this.headRadius - this.neckLength / 2, 0),
             pivotB: new CANNON.Vec3(0, this.upperBodyLength / 2, 0),
@@ -157,18 +169,18 @@ export class RagdollComponent extends Component {
         const upperLeftArm: any = (this.upperLeftArm.getComponent(RigidBody) as any)._body.impl;
         const upperRightArm: any = (this.upperRightArm.getComponent(RigidBody) as any)._body.impl;
 
-        const leftShoulder = new CANNON.ConeTwistConstraint(upperBody, upperLeftArm, {
-            pivotA: new CANNON.Vec3(-this.shouldersDistance / 2, this.upperBodyLength / 2, 0),
-            pivotB: new CANNON.Vec3(this.upperArmLength / 2, 0, 0),
+        const leftShoulder = new CANNON.ConeTwistConstraint(upperLeftArm, upperBody, {
+            pivotB: new CANNON.Vec3(-this.shouldersDistance / 2, this.upperBodyLength / 2, 0),
+            pivotA: new CANNON.Vec3(this.upperArmLength / 2, 0, 0),
+            axisB: CANNON.Vec3.UNIT_X, 
             axisA: CANNON.Vec3.UNIT_X,
-            axisB: CANNON.Vec3.UNIT_X,
             angle: angleB,
         });
-        const rightShoulder = new CANNON.ConeTwistConstraint(upperBody, upperRightArm, {
-            pivotA: new CANNON.Vec3(this.shouldersDistance / 2, this.upperBodyLength / 2, 0),
-            pivotB: new CANNON.Vec3(-this.upperArmLength / 2, 0, 0),
-            axisA: CANNON.Vec3.UNIT_X,
+        const rightShoulder = new CANNON.ConeTwistConstraint(upperRightArm, upperBody, {
+            pivotB: new CANNON.Vec3(this.shouldersDistance / 2, this.upperBodyLength / 2, 0),
+            pivotA: new CANNON.Vec3(-this.upperArmLength / 2, 0, 0),
             axisB: CANNON.Vec3.UNIT_X,
+            axisA: CANNON.Vec3.UNIT_X,
             angle: angleB,
         });
         // 把约束放入物理世界数组

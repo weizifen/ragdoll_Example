@@ -3,5 +3,17 @@
   "script": {
     "useDefineForClassFields": false,
     "allowDeclareFields": false
+  },
+  "physics": {
+    "collisionGroups": [
+      {
+        "index": 1,
+        "name": "BODY"
+      }
+    ],
+    "collisionMatrix": {
+      "0": 3,
+      "1": 1
+    }
   }
 }

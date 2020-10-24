@@ -15,7 +15,7 @@
         ],
         "no-namespace": false,
         "no-console": false,
-        "space-before-function-paren": true,
+        "space-before-function-paren": false,
         "max-classes-per-file": false,
         "variable-name": false,
         "object-literal-sort-keys": false,

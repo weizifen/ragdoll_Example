@@ -9,7 +9,7 @@ const { ccclass, property } = _decorator;
 @ccclass('StayStanding')
 export class StayStanding extends Component {
 
-    public m_UpMuliForceFadeSpeed: number = 160; // 额外上拉力的衰减速度
+    public m_UpMuliForceFadeSpeed: number = 170; // 额外上拉力的衰减速度
     public m_StandUpForce: number; // 人物平衡时候给头部向上的力
     public m_StandUpMultiForce: number; // 物体在stand平衡之前为了达到平衡给头部的额外的上拉力
     public m_gravityFactor: number = 0; // 模拟额外重力的因子

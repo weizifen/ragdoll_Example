@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, RigidBody, Vec3, macro, v3 } from 'cc';
+import { _decorator, Component, Node, RigidBody, Vec3, macro, v3, CCObject, find } from 'cc';
 import { VectorUtil } from './extend/vectorUtil';
 import { JointAnimationMgr } from './jointAnimationMgr';
 import { Player } from './player';
@@ -13,9 +13,11 @@ export class BalanceRotation extends Component {
     private mhip: RigidBody = null;
     private mPlayer: Player;
 
-    private mAngle_direction: Vec3;                // 叉乘向量
+    private mAngle_direction: Vec3 = new Vec3();                // 叉乘向量
     private mAngle: number;                            // 夹角
     private  _jointAnimationMgr: JointAnimationMgr;
+
+    private mtarget: Node = null;
 
     // 移动速度
     private _vector: Vec3 = Vec3.ZERO;
@@ -27,6 +29,7 @@ export class BalanceRotation extends Component {
         this.mPlayer = this.node.getComponent(Player);
         this._jointAnimationMgr = this.mPlayer.m_JointAnimationMgr;
         this.mhip = this._jointAnimationMgr.m_hip;
+        this.mtarget = find("bodyNew/TargetRotation");
         // this.scheduleOnce(() => {
 
 
@@ -37,39 +40,33 @@ export class BalanceRotation extends Component {
         //     // }, 1);
         // }, 5);
     }
-
-    private f = 0;
+    private dotValue;
     protected fixedUpdate(dt: number) {
-        // if (this._vector.lengthSqr() > 0) {
-        //     this.node.setPosition(this.node.position.add3f(this._vector.x * SPEED * dt, 0, -this._vector.y * SPEED * dt));
-        //     this._skeletal.resume();
-        // } else {
-        //     this._skeletal.pause();
-        // }
+        const dotValue = this.mhip.node.forward.negative().dot(this.mtarget.forward);
+        console.log(dotValue);
+        let add = 0;
+        if (dotValue > 0) {
+            // 目标物体在视野内
+            console.log("目标物体在视野内");
+        } else {
+            console.log("目标物体在视野外");
+            add += 180;
+        }
+        this.dotValue = dotValue;
+        this.mAngle = Vec3.angle(this.mhip.node.forward, this.mtarget.forward);
+        Vec3.cross(this.mAngle_direction, this.mhip.node.forward, this.mtarget.forward);
+        this.AddTorqueWithHip();
 
-        // if (this._vectorAngle.lengthSqr() > 0) {
-        //     this.node_camera.eulerAngles = this.node_camera.eulerAngles.add3f(0, -this._vectorAngle.x, 0);
-        // }
-
-
-        // this.mhip.setAngularVelocity(new Vec3(0, 2, 0));
-        // this.mhip.setAngularVelocity(new Vec3(0, 45 / macro.DEG , 0));
-
-        const angular = v3(0, 1, 0).multiplyScalar((this.angle / macro.DEG / 1) * 1000);
-        this.mhip.setAngularVelocity(angular);
+        // const angular = v3(0, 1, 0).multiplyScalar((this.angle / macro.DEG / 1) * 1000);
+        // this.mhip.setAngularVelocity(angular);
         // console.log(this.mhip.node.forward);
-        
 
     }
 
     protected _now_time = 0;
     protected update(dt: number) {
+        this.mtarget.eulerAngles = new Vec3(0, this.angle, 0);
 
-        // if (this.f < 60) {
-        //     this.mhip.setAngularVelocity(new Vec3(0, 90 / macro.DEG , 0));
-
-        //     this.f += 1;
-        // }
         this._now_time += dt;
         while (this._now_time >= CELL_TIME) {
             this.fixedUpdate(CELL_TIME);
@@ -87,10 +84,9 @@ export class BalanceRotation extends Component {
         // this._vector = vector.normalize();
         if (angle) {
             // 模型初始朝前，补个90度
-            // this.mPlayer.node.eulerAngles = new Vec3(0, angle + 90, 0);
-            // this.mhip.applyTorque(new Vec3(0, angle + 90, 0));
-            const normal = vector.normalize().multiplyScalar(4);
-            this.mhip.setLinearVelocity(new Vec3(normal.x, 0 , -normal.y));
+            this.angle = angle + 90;
+            // const normal = vector.normalize().multiplyScalar(4);
+            this.mhip.setLinearVelocity(new Vec3(0, 0, this.mhip.node.forward.z).normalize().negative().multiplyScalar(4));
         }
     }
 
@@ -102,12 +98,17 @@ export class BalanceRotation extends Component {
     /// <summary>
     /// 根据target点和角色旋转的角度差给对应方向，对应大小力的扭矩
     /// </summary>
-    private AddTorqueWithHip(vector: Vec3, angle: number) {
-        if (this.mAngle_direction.y > 0) {
-            // this.mhip.AddTorque(Vector3.up * mAngle* TorqueForce, ForceMode.Acceleration);
-        }
-        else {
-            // this.mhip.AddTorque(-Vector3.up * mAngle * TorqueForce, ForceMode.Acceleration);
+    private AddTorqueWithHip() {
+        const v = this.mAngle * this.TorqueForce;
+        if (this.dotValue > 0) {
+            if (this.mAngle_direction.y > 0) {
+                console.log("位于玩家左前方");
+                this.mhip.applyTorque(VectorUtil.Vector3.up.negative().clone().multiplyScalar(v));
+            }
+            else if (this.mAngle_direction.y < 0) {
+                console.log("位于玩家右前方");
+                this.mhip.applyTorque(VectorUtil.Vector3.up.clone().multiplyScalar(v));
+            }
         }
     }
 }

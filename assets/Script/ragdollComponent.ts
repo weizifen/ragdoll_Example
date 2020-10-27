@@ -72,9 +72,9 @@ export class RagdollComponent extends Component {
      * @memberof RagdollComponent
      */
     private joinConnect () {
-        const angleA = 10 / macro.DEG;
+        const angleA = 0;
         const angleB  = 0;
-        const twistAngle = 10 / macro.DEG;
+        const twistAngle = 0;
         const cannonWorld = PhysicsSystem.instance.physicsWorld.impl;
         // 颈关节（上）
         const head: any = (this.head.getComponent(RigidBody) as any)._body.impl;

@@ -11,9 +11,16 @@ export class JointAnimationMgr extends Component {
     // serializableDummy = 0;
     public m_rigids: RigidBody[] = [];
     public m_head: RigidBody = null;
+    public m_hip: RigidBody = null;
 
-    start () {
+    protected start () {
         // Your initialization goes here.
+        this.getAllRigid();
+        this.m_hip = this.node.getChildByName("hip").getComponent(RigidBody);
+    }
+
+    private getAllRigid() {
+        this.m_rigids = this.node.getComponentsInChildren(RigidBody);
     }
 
     // update (deltaTime: number) {

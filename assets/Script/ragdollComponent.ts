@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, PhysicsSystem, RigidBody, Vec3 } from "cc";
+import { _decorator, Component, Node, PhysicsSystem, RigidBody, Vec3, macro } from "cc";
 const { ccclass, property } = _decorator;
 
 @ccclass("RagdollComponent")
@@ -47,13 +47,6 @@ export class RagdollComponent extends Component {
     protected start () {
         // Your initialization goes here.
         this.createRagdoll();
-
-        this.scheduleOnce(() => {
-            console.log("test");
-
-            this.head.getComponent(RigidBody).applyForce(new Vec3(0, 1100 * 10, 0));
-
-        }, 4);
     }
     // update (deltaTime: number) {
     //     // Your update function goes here.
@@ -79,9 +72,9 @@ export class RagdollComponent extends Component {
      * @memberof RagdollComponent
      */
     private joinConnect () {
-        const angleA = 0;
-        const angleB  = 5;
-        const twistAngle = 5;
+        const angleA = 10 / macro.DEG;
+        const angleB  = 0;
+        const twistAngle = 10 / macro.DEG;
         const cannonWorld = PhysicsSystem.instance.physicsWorld.impl;
         // 颈关节（上）
         const head: any = (this.head.getComponent(RigidBody) as any)._body.impl;

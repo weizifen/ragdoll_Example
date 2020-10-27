@@ -1,4 +1,4 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, RigidBody, v3 } from 'cc';
 import { BodyDetect } from './bodyDetect';
 import { CMovement } from './c_Movement';
 import { JointAnimationMgr } from './jointAnimationMgr';
@@ -24,14 +24,18 @@ export class Player extends Component {
 
     // @property({type: CMovement})
     // public m_Movement: CMovement = null;
+
+    public m_JointAnimationMgr: JointAnimationMgr;
+    public m_BodyDetect: BodyDetect;
     protected start () {
         // Your initialization goes here.
+        this.m_JointAnimationMgr = this.node.getComponent(JointAnimationMgr);
+        this.m_BodyDetect = this.node.getComponent(BodyDetect);
     }
 
     update (deltaTime: number) {
         // Your update function goes here.
-        const world = this.node.getChildByName("head").getWorldPosition();
-        console.log(world);
-        
+        // const world = this.node.getChildByName("head").getWorldPosition();
+        // console.log(world);
     }
 }

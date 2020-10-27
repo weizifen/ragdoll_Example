@@ -1,8 +1,9 @@
-import { _decorator, Component, Node, Vec3, Collider, ICollisionEvent, BoxCollider, v3, SphereCollider } from 'cc';
+import { _decorator, Component, Node, Vec3, Collider, ICollisionEvent, BoxCollider, v3, SphereCollider, RigidBody } from 'cc';
 import { Target } from './target';
 import { VectorUtil } from './extend/vectorUtil';
 const { ccclass, property } = _decorator;
 
+// 处理碰撞类
 @ccclass('XPunchForce')
 export class XPunchForce extends Component {
     /* class member could be defined like this */
@@ -16,7 +17,6 @@ export class XPunchForce extends Component {
     @property
     public IsCollisionWall: boolean = false;
 
-
     public groundPoint: Vec3 = new Vec3(); // 地面碰撞点
     public wallPoint: Vec3 = new Vec3();   // 墙面碰撞点
     public wallnormal: Vec3 = new Vec3();  // 碰撞法线方向
@@ -26,15 +26,12 @@ export class XPunchForce extends Component {
 
     private _collider: Collider;
 
-    private base: Node;
-
     protected start() {
         // Your initialization goes here.
         let collider: Collider = this.node.getComponent(BoxCollider);
         if (!collider) {
             collider = this.node.getComponent(SphereCollider);
         }
-        this.base = this.node;
 
         collider.on("onCollisionEnter", this.onCollisionEnter, this);
         collider.on("onCollisionExit", this.onCollisionExit, this);
@@ -60,23 +57,29 @@ export class XPunchForce extends Component {
 
         const normal: Vec3 = new Vec3();
         event.contacts[0].getWorldNormalOnB(normal);
+        // console.log("selfCollion:" + event.selfCollider.node.name +
+        // "otherCollion:" + event.otherCollider.node.name +
+        // "angle:");
+        
+        // console.log(Vec3.angle(VectorUtil.Vector3.up, normal));
+        
         if (Vec3.angle(VectorUtil.Vector3.up, normal) > 95){ // 朝碰撞体反面跳
             return;
         }
         this._collider = collider;
         if (Vec3.angle(VectorUtil.Vector3.up, normal) < 70 && tag === "Ground"){
             this.IsCollisionGround = true;
-            event.contacts[0].getWorldPointOnA(this.groundPoint);
+            event.contacts[0].getWorldPointOnB(this.groundPoint);
         }
 
-        if (Vec3.angle(VectorUtil.Vector3.up, normal) > 75){
+        if (Vec3.angle(VectorUtil.Vector3.up, normal) > 75){ // 击打
             if (tag === "bullet" || tag === "weapon" || tag === "airwall") {
                 return;
             }
             this.wallnormal = normal;
             this.IsCollisionWall = true;
             this.m_StemEmptyTimer = 1;
-            event.contacts[0].getWorldPointOnA(this.wallPoint);
+            event.contacts[0].getWorldPointOnB(this.wallPoint);
         }
     }
     private onCollisionStay(event: ICollisionEvent) {
@@ -96,7 +99,7 @@ export class XPunchForce extends Component {
 
         if (Vec3.angle(VectorUtil.Vector3.up, normal) < 70 && tag === "Ground"){
             this.IsCollisionGround = true;
-            event.contacts[0].getWorldPointOnA(this.groundPoint);
+            event.contacts[0].getWorldPointOnB(this.groundPoint);
         }
 
         if (Vec3.angle(VectorUtil.Vector3.up, normal) > 75){
@@ -106,7 +109,7 @@ export class XPunchForce extends Component {
             this.wallnormal = normal;
             this.IsCollisionWall = true;
             this.m_StemEmptyTimer = 1;
-            event.contacts[0].getWorldPointOnA(this.wallPoint);
+            event.contacts[0].getWorldPointOnB(this.wallPoint);
         }
     }
     private onCollisionExit(event: ICollisionEvent) {

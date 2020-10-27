@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, RigidBody, PhysicsSystem } from 'cc';
+import { _decorator, Component, Node, RigidBody, PhysicsSystem, v3 } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('PlayerRigidBodyMgr')
@@ -15,8 +15,10 @@ export class PlayerRigidBodyMgr extends Component {
     protected onLoad() {
 
     }
-    start () {
+    start() {
         // Your initialization goes here.
+        this.m_HipRigidBody = this.node.getChildByName("hip").getComponent(RigidBody);
+        this.InitRigidBodies();
     }
 
     // update (deltaTime: number) {
@@ -24,10 +26,5 @@ export class PlayerRigidBodyMgr extends Component {
     // }
     private InitRigidBodies() { //初始化刚体，编号
         this.m_AllRigidBodies = this.node.getComponentsInChildren(RigidBody);
-        const length = this.m_AllRigidBodies.length;
-        for (let i = 0; i < length; i++) {
-            const rigidbody = this.m_AllRigidBodies[i];
-            // rigidbody.gameObject.AddComponent<RigidBodyIndexHolder>().InitIndex(i);   
-        }
-    }   
+    }
 }

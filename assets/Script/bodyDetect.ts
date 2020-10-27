@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, RigidBody, geometry, PhysicsSystem, PhysicsRayResult } from 'cc';
+import { _decorator, Component, Node, RigidBody, geometry, PhysicsSystem, PhysicsRayResult, v3 } from 'cc';
 import { CMovement } from './c_Movement';
 import { VectorUtil } from './extend/vectorUtil';
 import { StayStanding } from './stayStanding';
@@ -40,55 +40,28 @@ export class BodyDetect extends Component {
         // Your update function goes here.
         this.HeadRayCast();
 
+        // this.IsBodyGround(deltaTime);
         // if (!IsBodyGround() && m_Groundtimer < m_Groundtime || (m_Cmovement.m_state == State.up
         //     || m_Cmovement.m_state == State.rightUp || m_Cmovement.m_state == State.leftUp || m_Cmovement.m_IsInWater)) {
         //     return;
         // }
-        this.m_StayStanding.StandBalance();
+        if (this.mheadDistanceToGround < 0.4) {
+            this.m_StayStanding.StandBalance();
+
+        }
     }
     // 头部检测与地面的距离
     private HeadRayCast() {
         const startWorld = this.mhead.node.getWorldPosition();
         const ray = new geometry.ray(startWorld.x, startWorld.y, startWorld.z, VectorUtil.Vector3.down.x, VectorUtil.Vector3.down.y, VectorUtil.Vector3.down.z);
         const py = PhysicsSystem.instance;
-        py.raycastClosest(ray, 1 << 1, 20, false);
+        py.raycastClosest(ray, 1 << 0, 20, false);
         const mhit = py.raycastClosestResult;
 
         if (mhit) {
             this.mheadDistanceToGround = this.mhead.node.getWorldPosition().y - mhit.hitPoint.y;
+            // console.log(`头部距离地面的高度：${this.mheadDistanceToGround}`);
         }
     }
-
-    // private IsBodyGround() {
-    //     for (let i = 0; i < this.m_coll.length; i++) {
-    //         const item = this.m_coll[i];
-    //         if (item.IsCollisionGround)
-    //         {
-    //             if (item.GetComponent<LeftKnee>() != null || item.GetComponent<RightKnee>() != null || item.GetComponent<Hip>() != null
-    //                 || item.GetComponent<LeftLeg>() != null || item.GetComponent<RightLeg>() != null)
-    //             {
-    //                 // 播放跑步特效
-    //                 if ((item.GetComponent<LeftKnee>() != null || item.GetComponent<RightKnee>() != null)
-    //                     && (m_Cmovement.m_state == State.forward || m_Cmovement.m_state == State.back))
-    //                 {
-    //                     PlayGroundEffect(item.groundPoint);
-    //                 }
-    //                 m_StayStanding.m_gravityFactor = 0;
-    //                 mheadDistanceToGround = mhead.transform.position.y - item.groundPoint.y;
-    //                 mCanJumpWallRebound = false;
-    //                 return true;
-    //             }
-    //             continue;
-    //         }
-    //     }
-    //     m_StayStanding.m_gravityFactor += m_GravityFactor * Time.fixedDeltaTime;
-    //     if (m_StayStanding.m_gravityFactor>=2)
-    //     {
-    //         m_StayStanding.m_gravityFactor = 2;
-    //     }
-    //     StartCoroutine(ExternalGravity());
-    //     mCanJumpWallRebound = true;
-    //     return false;
-    // }
 
 }
